@@ -1,0 +1,206 @@
+<div class="row mt-4" id="main-admin">
+  <div class="col">
+    <h4 class="text-center">Gestion des produits</h4>
+    <button type="button" class="mb-4 btn btn-dark" (click)="onOpenModal(null, 'add')">
+      Ajouter un Produit
+    </button>
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Nom Produit</th>
+          <th>Catégorie Produit</th>
+          <th>Photo</th>
+          <th>Disponibilité</th>
+          <th>Prix</th>
+          <th>Qté</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let produit of produits">
+          <td>{{produit.nomProduit}}</td>
+          <td>{{produit.categorie}}</td>
+          <td><img [src]="produit.photo" [ngStyle]="{'width':'50px', 'height':'auto'}" alt=""></td>
+          <td *ngIf="produit.disponibilite">En Stock</td>
+          <td *ngIf="!produit.disponibilite">En Rupture de Stock</td>
+          <td>{{produit.prix}}</td>
+          <td>{{produit.qte}}</td>
+          <td class="d-flex justify-content-around">
+            <span>
+              <button class="btn btn-warning" (click)="onOpenModal(produit, 'edit')">
+                <fa-icon [icon]="faEdit"></fa-icon>
+              </button>
+            </span>
+            <span>
+              <button class="btn btn-danger" (click)="onOpenModal(produit, 'delete')">
+                <fa-icon [icon]="faTrash"></fa-icon>
+              </button>
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal ajout produit-->
+<div class="modal fade" id="addProduit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Nouveau Produit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form #addForm="ngForm" (ngSubmit)="onAddProduit(addForm)">
+        <div class="modal-body">
+          <div class="form-group m-2">
+            <label>Nom du Produit</label>
+            <input required ngModel name="nomProduit" type="text" class="form-control" placeholder="Nom Produit">
+          </div>
+          <div class="form-group m-2">
+            <label>Description du produit</label>
+            <textarea required ngModel name="description" id="" class="form-control"></textarea>
+          </div>
+          <div class="form-group m-2">
+            <input required ngModel name="photo" type="text" class="form-control" placeholder="URL de l'image">
+          </div>
+          <div class="form-group m-2">
+            <label>Prix</label>
+            <input required ngModel name="prix" type="number" min="1" class="form-control">
+          </div>
+          <div class="form-group m-2">
+            <label>Qté</label>
+            <input required ngModel name="qte" type="number" min="0" class="form-control">
+          </div>
+          <div class="form-group m-2">
+            <select required name="categorie" id="" class="form-select" ngModel>
+              <option selected>Sélectionner une catégorie</option>
+              <option ngValue="Categorie A">Categorie A</option>
+              <option ngValue="Categorie B">Categorie B</option>
+              <option ngValue="Categorie C">Categorie C</option>
+            </select>
+          </div>
+          <div class="form-check">
+            <input ngModel class="form-check-input" type="radio" name="disponibilite" value="true" id="out_of_stock">
+            <label class="form-check-label" for="out_of_stock">
+              En Stock
+            </label>
+          </div>
+          <div class="form-check">
+            <input ngModel class="form-check-input" type="radio" name="disponibilite" value="false" id="in_stock">
+            <label class="form-check-label" for="in_stock">
+              En Rupture de stock
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="add-produit-form" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button type="submit" [disabled]="addForm.invalid" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal modification produit -->
+<div class="modal fade" id="editProduit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modification Produit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form #editForm="ngForm">
+        <div class="modal-body">
+          <div class="form-group m-2">
+            <label>Nom du Produit</label>
+            <input ngModel="{{editProduit?.nomProduit}}" name="nomProduit" required type="text" class="form-control"
+              placeholder="Nom Produit">
+          </div>
+          <input type="hidden" ngModel="{{editProduit?.idProduit}}" name="idProduit" class="form-control" id="id"
+            placeholder="Email">
+          <div class="form-group m-2">
+            <label>Description du produit</label>
+            <textarea ngModel="{{editProduit?.nomProduit}}" required name="description" id=""
+              class="form-control">{{editProduit?.description}}</textarea>
+          </div>
+          <div class="form-group m-2">
+            <input ngModel="{{editProduit?.photo}}" name="photo" required type="text" class="form-control"
+              placeholder="URL de l'image">
+          </div>
+          <div class="form-group m-2">
+            <label>Prix</label>
+            <input ngModel="{{editProduit?.prix}}" name="prix" required type="number" min="1" class="form-control">
+          </div>
+          <div class="form-group m-2">
+            <label>Qté</label>
+            <input ngModel="{{editProduit?.qte}}" name="qte" required type="number" min="0" class="form-control">
+          </div>
+          <div class="form-group m-2">
+            <select ngModel="{{editProduit?.categorie}}" required name="categorie" id="" class="form-select">
+              <option [selected]="editProduit?.categorie=='Categorie A'" value="Categorie A">
+                Categorie A
+              </option>
+              <option [selected]="editProduit?.categorie=='Categorie B'" value="Categorie B">
+                Categorie B
+              </option>
+              <option [selected]="editProduit?.categorie=='Categorie C'" value="Categorie C">
+                Categorie C
+              </option>
+            </select>
+          </div>
+          <div class="form-check">
+            <input [checked]="editProduit?.disponibilite === true" value="true" ngModel="{{editProduit?.disponibilite}}"
+              class="form-check-input" type="radio" name="disponibilite" id="in_stock">
+            <label class="form-check-label" for="in_stock">
+              En Stock
+            </label>
+          </div>
+          <div class="form-check">
+            <label class="form-check-label" for="out_of_stock">
+              En Rupture de stock
+            </label>
+            <input [checked]="editProduit?.disponibilite === false" value="false"
+              ngModel="{{editProduit?.disponibilite}}" class="form-check-input" type="radio" name="disponibilite"
+              id="out_of_stock">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="edit-produit-form" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+          <button [disabled]="editForm.invalid" type="button" (click)="onUpdateProduit(editForm.value)"
+            class="btn btn-primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Suppression produit -->
+<div class="modal fade" id="deleteProduit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Suppression Produit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Êtes-vous sûr(e) de vouloir supprimer?
+      </div>
+      <div class="modal-footer">
+        <button id="delete-produit-form" type="button" class="btn btn-secondary"
+          data-bs-dismiss="modal">Annuler</button>
+        <button (click)="onDeleteProduit(deleteProduit?.idProduit)" type="button"
+          class="btn btn-primary">Confirmer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- notification to show if there's no products -->
+<div *ngIf="produits?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
+  <div class="alert alert-info text-center">
+    <h4>Aucun produit</h4>
+    <p>Pas encore de produits.</p>
+  </div>
+</div>
